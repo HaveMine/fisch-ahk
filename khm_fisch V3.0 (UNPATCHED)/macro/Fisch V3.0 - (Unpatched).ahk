@@ -8,11 +8,13 @@ CoordMode, Tooltip, Relative
 CoordMode, Pixel, Relative
 CoordMode, Mouse, Relative
 
+; --- Variabel Global untuk Gradasi Warna ---
+g_FishColors := "0x5B4B43"
+g_WhiteColors := "0xFFFFFF"
+
 ;		GUI		==============================================================================================================;
 MacroActive := false
 SilentLoad := false
-FishBarColorHex := "0x5B4B43"
-WhiteBarColorHex := "0xFFFFFF"
 PickingColorFor := ""
 
 Gui,+AlwaysOnTop
@@ -80,8 +82,8 @@ GuiControl, +Background121212 +cFFFFFF, Sera
 GuiControl, +Background121212 +cFFFFFF, ShakeMode
 GuiControl, +Background121212 +cFFFFFF, NavigationKey
 GuiControl, +Background121212 +cFFFFFF, ShakeFailsafe
-GuiControl, +Background121212 +cFFFFFF, FishBarColorHex
-GuiControl, +Background121212 +cFFFFFF, WhiteBarColorHex
+GuiControl, +Background121212 +cFFFFFF, FishBarColorHexDisplay
+GuiControl, +Background121212 +cFFFFFF, WhiteBarColorHexDisplay
 GuiControl, +Background121212 +cFFFFFF, ColorPreset
 
 
@@ -129,10 +131,10 @@ Gui, Add, Edit, x180 y300 w100 vSideDelay, 400
 ; COLOR BLOCK (MODIFIED)
 Gui, Add, Text, x30 y340, Color Preset:
 Gui, Add, ComboBox, x180 y340 w195 vColorPreset gUpdateColorPreset, Default|SanguineSpire|Onirifalx
-Gui, Add, Text, x30 y380, Fish Bar Color (Hex):
-Gui, Add, Edit, x180 y380 w100 vFishBarColorHex, %FishBarColorHex%
-Gui, Add, Text, x30 y420, White Bar Color (Hex):
-Gui, Add, Edit, x180 y420 w100 vWhiteBarColorHex, %WhiteBarColorHex%
+Gui, Add, Text, x30 y380, Fish Bar Colors:
+Gui, Add, Edit, x180 y380 w195 vFishBarColorHexDisplay ReadOnly, %g_FishColors%
+Gui, Add, Text, x30 y420, White Bar Colors:
+Gui, Add, Edit, x180 y420 w195 vWhiteBarColorHexDisplay ReadOnly, %g_WhiteColors%
 
 ;
 ; Stable
@@ -196,25 +198,22 @@ UpdateColorPreset:
 	Gui, Submit, NoHide
 	if (ColorPreset = "Default")
 	{
-		GuiControl,, FishBarColorHex, 0x5B4B43
-		GuiControl,, WhiteBarColorHex, 0xFFFFFF
-		Global FishBarColorHex := "0x5B4B43"
-		Global WhiteBarColorHex := "0xFFFFFF"
+		Global g_FishColors := "0x5B4B43"
+		Global g_WhiteColors := "0xFFFFFF"
 	}
 	else if (ColorPreset = "SanguineSpire")
 	{
-		GuiControl,, FishBarColorHex, 0x5a4241
-		GuiControl,, WhiteBarColorHex, 0x2b0000
-		Global FishBarColorHex := "0x5a4241"
-		Global WhiteBarColorHex := "0x2b0000"
+		Global g_FishColors := "0x5a4241|0x44110f"
+		Global g_WhiteColors := "0x2c0000|0x2b0000"
 	}
 	else if (ColorPreset = "Onirifalx")
 	{
-		GuiControl,, FishBarColorHex, 0x000000
-		GuiControl,, WhiteBarColorHex, 0xbbe7ff
-		Global FishBarColorHex := "0x000000"
-		Global WhiteBarColorHex := "0xbbe7ff"
+		Global g_FishColors := "0x000000|0x44110f"
+		Global g_WhiteColors := "0xb3dcf5|0x86acd0|0x7498c0|0xbbe7ff|0x6587b4"
 	}
+	; Update tampilan GUI
+	GuiControl,, FishBarColorHexDisplay, %g_FishColors%
+	GuiControl,, WhiteBarColorHexDisplay, %g_WhiteColors%
 Return
 
 
@@ -250,8 +249,9 @@ SaveSettings:
 	IniWrite, %FishBarColorTolerance%, %SettingsFileName%, Minigame, FishBarColorTolerance
 	IniWrite, %WhiteBarColorTolerance%, %SettingsFileName%, Minigame, WhiteBarColorTolerance
 	IniWrite, %ArrowColorTolerance%, %SettingsFileName%, Minigame, ArrowColorTolerance
-	IniWrite, %FishBarColorHex%, %SettingsFileName%, Minigame, FishBarColorHex
-	IniWrite, %WhiteBarColorHex%, %SettingsFileName%, Minigame, WhiteBarColorHex
+	
+	IniWrite, %ColorPreset%, %SettingsFileName%, Minigame, ColorPreset ; <-- SIMPAN NAMA PRESET
+	; (Hapus simpanan Hex)
 	
 	IniWrite, %ScanDelay%, %SettingsFileName%, Minigame, ScanDelay
 	IniWrite, %SideBarRatio%, %SettingsFileName%, Minigame, SideBarRatio
@@ -304,9 +304,10 @@ LoadSettings:
 	IniRead, lFishBarColorTolerance, %SettingsFileName%, Minigame, FishBarColorTolerance
 	IniRead, lWhiteBarColorTolerance, %SettingsFileName%, Minigame, WhiteBarColorTolerance
 	IniRead, lArrowColorTolerance, %SettingsFileName%, Minigame, ArrowColorTolerance
-	IniRead, lFishBarColorHex, %SettingsFileName%, Minigame, FishBarColorHex, 0x5B4B43
-	IniRead, lWhiteBarColorHex, %SettingsFileName%, Minigame, WhiteBarColorHex, 0xFFFFFF
-
+	
+	IniRead, lColorPreset, %SettingsFileName%, Minigame, ColorPreset, Default ; <-- BACA NAMA PRESET
+	ColorPreset := lColorPreset ; Set variabel untuk gosub
+	
 	IniRead, lScanDelay, %SettingsFileName%, Minigame, ScanDelay
 	IniRead, lSideBarRatio, %SettingsFileName%, Minigame, SideBarRatio
 	IniRead, lSideDelay, %SettingsFileName%, Minigame, SideDelay
@@ -351,9 +352,10 @@ LoadSettings:
 	GuiControl,, FishBarColorTolerance, %lFishBarColorTolerance%
 	GuiControl,, WhiteBarColorTolerance, %lWhiteBarColorTolerance%
 	GuiControl,, ArrowColorTolerance, %lArrowColorTolerance%
-	GuiControl,, FishBarColorHex, %lFishBarColorHex%
-	GuiControl,, WhiteBarColorHex, %lWhiteBarColorHex%
-
+	
+	GuiControl, Choose, ColorPreset, %lColorPreset% ; <-- UPDATE GUI DROPDOWN
+	Gosub, UpdateColorPreset ; <-- JALANKAN LOGIC PRESET
+	
 	GuiControl,, ScanDelay, %lScanDelay%
 	GuiControl,, SideBarRatio, %lSideBarRatio%
 	GuiControl,, SideDelay, %lSideDelay%
@@ -431,10 +433,27 @@ Gui, Hide
 	IniRead, lFishBarColorTolerance, %SettingsFileName%, Minigame, FishBarColorTolerance
 	IniRead, lWhiteBarColorTolerance, %SettingsFileName%, Minigame, WhiteBarColorTolerance
 	IniRead, lArrowColorTolerance, %SettingsFileName%, Minigame, ArrowColorTolerance
-	IniRead, lFishBarColorHex, %SettingsFileName%, Minigame, FishBarColorHex, 0x5B4B43
-	FishBarColorHex := lFishBarColorHex
-	IniRead, lWhiteBarColorHex, %SettingsFileName%, Minigame, WhiteBarColorHex, 0xFFFFFF
-	WhiteBarColorHex := lWhiteBarColorHex
+	
+	IniRead, lColorPreset, %SettingsFileName%, Minigame, ColorPreset, Default ; <-- BACA PRESET SAAT LAUNCH
+	ColorPreset := lColorPreset
+	
+	; --- Terapkan Logika Preset Secara Manual ---
+	if (ColorPreset = "Default")
+	{
+		Global g_FishColors := "0x5B4B43"
+		Global g_WhiteColors := "0xFFFFFF"
+	}
+	else if (ColorPreset = "SanguineSpire")
+	{
+		Global g_FishColors := "0x5a4241|0x44110f"
+		Global g_WhiteColors := "0x2c0000|0x2b0000"
+	}
+	else if (ColorPreset = "Onirifalx")
+	{
+		Global g_FishColors := "0x000000|0x44110f"
+		Global g_WhiteColors := "0xb3dcf5|0x86acd0|0x7498c0|0xbbe7ff|0x6587b4"
+	}
+	; (Variabel Hex yang lama tidak dibaca lagi)
 
 	IniRead, lScanDelay, %SettingsFileName%, Minigame, ScanDelay
 	IniRead, lSideBarRatio, %SettingsFileName%, Minigame, SideBarRatio
@@ -476,19 +495,18 @@ FirstRun := false
 ;
 ; --- DPI CHECK ---
 if (A_ScreenDPI != 96) {
- Msg := "Your display scale is not 100" Chr(37) ".`nThe macro may not work properly.`nContinue anyway?`n(Press O when nothing appeared)"
 
- Gui, New, +AlwaysOnTop +ToolWindow -MaximizeBox -MinimizeBox +OwnDialogs
- Gui, Font, s12, Segoe UI
+Gui, New, +AlwaysOnTop -MaximizeBox +MinimizeBox +OwnDialogs
+Gui, Font, s12, Segoe UI
 
- Gui, Add, Text, w400 h140 Center, Your display scale is not 100`%`%.`nThe macro may not work properly.`n`nContinue anyway?`n(Press O when nothing appeared or bugged)
- Gui, Add, Button, gDPI_Yes w100 h30 x100 y+10 Default, Yes
- Gui, Add, Button, gDPI_No w100 h30 x+30 yp, No
+Gui, Add, Text, w400 h140 Center, If your display scale is not 100`%`%.`nThe macro may not work properly.`n`nContinue anyway?`n(Press O when nothing appeared or bugged)
+Gui, Add, Button, gDPI_Yes w100 h30 x100 y+10 Default, Yes
+Gui, Add, Button, gDPI_No w100 h30 x+30 yp, No
 
- Gui, Show, w450 h220 Center, Display Scale Warning (PAUSED)
+Gui, Show, w450 h220 Center, Display Scale Warning (PAUSED)
 
- WinWaitClose, Display Scale Warning
- return
+WinWaitClose, Display Scale Warning
+return
 }
 
 return
@@ -610,7 +628,8 @@ return
 #If (!WinActive("ahk_class AutoHotkeyGUI") && MacroActive)
 $o::
  Gosub, StopMacro
- Gosub, Launch ; return
+ Gosub, Launch  
+ return
 
 $m::Reload
 $p::Goto, StartCalculation
@@ -773,7 +792,6 @@ if (ClickFailsafeCount >= ShakeFailsafe)
 return
 
 ClickShakeMode:
-
 tooltip, Current Task: Shaking, %TooltipX%, %Tooltip7%, 7
 tooltip, Looking for White pixels, %TooltipX%, %Tooltip8%, 8
 tooltip, Click X: None, %TooltipX%, %Tooltip9%, 9
@@ -791,6 +809,9 @@ ForceReset := false
 
 settimer, ClickShakeFailsafe, 1000
 
+;====================================================================================================;
+; --- INI ADALAH LOGIKA SHAKE YANG DIPERBAIKI (DIBALIK) ---
+;====================================================================================================;
 ClickShakeModeRedo:
 if (ForceReset == true)
 	{
@@ -800,51 +821,67 @@ if (ForceReset == true)
 	goto RestartMacro
 	}
 sleep %ClickScanDelay%
-PixelSearch, , , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %FishBarColorHex%, %FishBarColorTolerance%, Fast
+
+; --- Langkah 1: Selalu cari "shake" (0xFFFFFF) TERLEBIH DAHULU ---
+PixelSearch, ClickX, ClickY, ClickShakeLeft, ClickShakeTop, ClickShakeRight, ClickShakeBottom, 0xFFFFFF, %ClickShakeColorTolerance%, Fast
 if !ErrorLevel
-	{
-	settimer, ClickShakeFailsafe, off
-	tooltip, , , , 9
-	tooltip, , , , 11
-	tooltip, , , , 12
-	tooltip, , , , 14
-	goto BarMinigame
-	}
-else
-	{
-	PixelSearch, ClickX, ClickY, ClickShakeLeft, ClickShakeTop, ClickShakeRight, ClickShakeBottom, 0xFFFFFF, %ClickShakeColorTolerance%, Fast
-	if !ErrorLevel
-		{
+{
+	; --- DITEMUKAN: Lakukan logic klik ---
+	tooltip, Click X: %ClickX%, %TooltipX%, %Tooltip9%, 9
+	tooltip, Click Y: %ClickY%, %TooltipX%, %Tooltip10%, 10
 
-		tooltip, Click X: %ClickX%, %TooltipX%, %Tooltip9%, 9
-		tooltip, Click Y: %ClickY%, %TooltipX%, %Tooltip10%, 10
-
-		if (ClickX != MemoryX and ClickY != MemoryY)
-			{
-			ClickShakeRepeatBypassCounter := 0
-			ClickCount++
-			click, %ClickX%, %ClickY%
-			tooltip, Click Count: %ClickCount%, %TooltipX%, %Tooltip11%, 11
-			MemoryX := ClickX
-			MemoryY := ClickY
-			goto ClickShakeModeRedo
-			}
-		else
-			{
-			ClickShakeRepeatBypassCounter++
-			if (ClickShakeRepeatBypassCounter >= 10)
-				{
-				MemoryX := 0
-				MemoryY := 0
-				}
-			goto ClickShakeModeRedo
-			}
-		}
-	else
-		{
+	if (ClickX != MemoryX and ClickY != MemoryY)
+	{
+		ClickShakeRepeatBypassCounter := 0
+		ClickCount++
+		click, %ClickX%, %ClickY%
+		tooltip, Click Count: %ClickCount%, %TooltipX%, %Tooltip11%, 11
+		MemoryX := ClickX
+		MemoryY := ClickY
 		goto ClickShakeModeRedo
+	}
+	else
+	{
+		ClickShakeRepeatBypassCounter++
+		if (ClickShakeRepeatBypassCounter >= 10)
+		{
+			MemoryX := 0
+			MemoryY := 0
+		}
+		goto ClickShakeModeRedo
+	}
+}
+else
+{
+	; --- Langkah 2: "shake" TIDAK DITEMUKAN, cek apakah minigame sudah dimulai (loop gradasi) ---
+	FishFoundInShake := false
+	Loop, Parse, g_FishColors, |
+	{
+		CurrentFishColor := A_LoopField
+		PixelSearch, , , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %CurrentFishColor%, %FishBarColorTolerance%, Fast
+		if !ErrorLevel
+		{
+			FishFoundInShake := true
+			break
 		}
 	}
+
+	if (FishFoundInShake)
+	{
+		; --- MINIGAME DIMULAI: Langsung lompat ---
+		settimer, ClickShakeFailsafe, off
+		tooltip, , , , 9
+		tooltip, , , , 11
+		tooltip, , , , 12
+		tooltip, , , , 14
+		goto BarMinigame
+	}
+	else
+	{
+		; --- Tidak ada "shake" DAN tidak ada minigame, loop lagi ---
+		goto ClickShakeModeRedo
+	}
+}
 
 ;====================================================================================================;
 ; Navigation shake mode removed
@@ -1030,13 +1067,31 @@ else
 goto BarMinigameAction
 
 
-
+;====================================================================================================;
+; --- (LOGIKA INTI YANG DIUBAH DI RESPON SEBELUMNYA) ---
+;====================================================================================================;
 BarMinigame2:
 sleep 1
-PixelSearch, FishX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %FishBarColorHex%, %FishBarColorTolerance%, Fast
-if !ErrorLevel
-	{
-	tooltip, +, %FishX%, %FishBarTooltipHeight%, 20
+
+; --- Langkah 1: Loop untuk mencari Ikan (salah satu warna di g_FishColors) ---
+FishFound := false
+Loop, Parse, g_FishColors, |
+{
+    CurrentFishColor := A_LoopField
+    PixelSearch, FishX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %CurrentFishColor%, %FishBarColorTolerance%, Fast
+    if !ErrorLevel
+    {
+        FishFound := true  ; Ditemukan!
+        break             ; Hentikan looping ikan
+    }
+}
+
+; --- Langkah 2: Jika Ikan Ditemukan, cari Bar Putih ---
+if (FishFound)
+{
+    tooltip, +, %FishX%, %FishBarTooltipHeight%, 20
+    
+    ; --- (Logika MaxLeft/MaxRight tidak berubah) ---
 	if (FishX < MaxLeftBar)
 		{
 			Action := 3
@@ -1069,79 +1124,95 @@ if !ErrorLevel
 				}
 			return
 		}
-	PixelSearch, BarX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %WhiteBarColorHex%, %WhiteBarColorTolerance%, Fast
-	if !ErrorLevel
-		{
-			tooltip, , , , 18
-			BarX := BarX + HalfBarSize
-			Direction := BarX - FishX
-			DistanceFactor := Abs(Direction) / HalfBarSize
-
-			Ratio2 := Deadzone2/WhiteBarSize
-			if (Direction > Deadzone && Direction < Deadzone2)
-			{
-				Action := 1
-				tooltip, Tracking direction: <, %TooltipX%, %Tooltip10%, 10
-				tooltip, <, %BarX%, %FishBarTooltipHeight%, 19
-			}
-			else if (Direction < -Deadzone && Direction > -Deadzone2)
-			{
-				Action := 2
-				tooltip, Tracking direction: >, %TooltipX%, %Tooltip10%, 10
-				tooltip, >, %BarX%, %FishBarTooltipHeight%, 19
-			}
-			else if (Direction > Deadzone2)
-			{
-				Action := 5
-				tooltip, Tracking direction: <<<, %TooltipX%, %Tooltip10%, 10
-				tooltip, <, %BarX%, %FishBarTooltipHeight%, 19
-			}
-			else if (Direction < -Deadzone2)
-			{
-				Action := 6
-				tooltip, Tracking direction: >>>, %TooltipX%, %Tooltip10%, 10
-				tooltip, >, %BarX%, %FishBarTooltipHeight%, 19
-			}
-			else
-			{
-				Action := 0
-				tooltip, Stabilizing, %TooltipX%, %Tooltip10%, 10
-				tooltip, ., %BarX%, %FishBarTooltipHeight%, 19
-			}
-		}
-	else
-		{
-			Direction := HalfBarSize
-			PixelSearch, ArrowX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, 0x878584, %ArrowColorTolerance%, Fast
-			ArrowX := ArrowX-FishX
-			if (ArrowX > 0)
-			{	
-				Action := 5
-				BarX := FishX+HalfBarSize
-				tooltip, Tracking direction: <<<, %TooltipX%, %Tooltip10%, 10
-				tooltip, <, %BarX%, %FishBarTooltipHeight%, 19
-			}
-			else
-			{	
-				Action := 6
-				BarX := FishX-HalfBarSize
-				tooltip, Tracking direction: >>>, %TooltipX%, %Tooltip10%, 10
-				tooltip, >, %BarX%, %FishBarTooltipHeight%, 19
-			}
-		}
-	}
-else
+	
+	; --- Langkah 3: Loop untuk mencari Bar Putih (salah satu warna di g_WhiteColors) ---
+	BarFound := false
+	Loop, Parse, g_WhiteColors, |
 	{
-		tooltip, , , , 10
-		tooltip, , , , 11
-		tooltip, , , , 12
-		tooltip, , , , 13
-		tooltip, , , , 14
-		tooltip, , , , 15
-		tooltip, , , , 17
-		tooltip, , , , 18
-		tooltip, , , , 19
-		tooltip, , , , 20
-		EndMinigame := true
-		settimer, BarMinigame2, Off
+		CurrentWhiteColor := A_LoopField
+		PixelSearch, BarX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %CurrentWhiteColor%, %WhiteBarColorTolerance%, Fast
+		if !ErrorLevel
+		{
+			BarFound := true ; Ditemukan!
+			break          ; Hentikan looping bar
+		}
 	}
+
+    ; --- Langkah 4: Jika Bar Putih DITEMUKAN, jalankan logika minigame ---
+	if (BarFound)
+	{
+		tooltip, , , , 18
+		BarX := BarX + HalfBarSize
+		Direction := BarX - FishX
+		DistanceFactor := Abs(Direction) / HalfBarSize
+
+		Ratio2 := Deadzone2/WhiteBarSize
+		if (Direction > Deadzone && Direction < Deadzone2)
+		{
+			Action := 1
+			tooltip, Tracking direction: <, %TooltipX%, %Tooltip10%, 10
+			tooltip, <, %BarX%, %FishBarTooltipHeight%, 19
+		}
+		else if (Direction < -Deadzone && Direction > -Deadzone2)
+		{
+			Action := 2
+			tooltip, Tracking direction: >, %TooltipX%, %Tooltip10%, 10
+			tooltip, >, %BarX%, %FishBarTooltipHeight%, 19
+		}
+		else if (Direction > Deadzone2)
+		{
+			Action := 5
+			tooltip, Tracking direction: <<<, %TooltipX%, %Tooltip10%, 10
+			tooltip, <, %BarX%, %FishBarTooltipHeight%, 19
+		}
+		else if (Direction < -Deadzone2)
+		{
+			Action := 6
+			tooltip, Tracking direction: >>>, %TooltipX%, %Tooltip10%, 10
+			tooltip, >, %BarX%, %FishBarTooltipHeight%, 19
+		}
+		else
+		{
+			Action := 0
+			tooltip, Stabilizing, %TooltipX%, %Tooltip10%, 10
+			tooltip, ., %BarX%, %FishBarTooltipHeight%, 19
+		}
+	}
+    ; --- Langkah 5: Jika Bar Putih TIDAK DITEMUKAN (tapi ikan ada), cari panah ---
+	else
+	{
+		Direction := HalfBarSize
+		PixelSearch, ArrowX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, 0x878584, %ArrowColorTolerance%, Fast
+		ArrowX := ArrowX-FishX
+		if (ArrowX > 0)
+		{	
+			Action := 5
+			BarX := FishX+HalfBarSize
+			tooltip, Tracking direction: <<<, %TooltipX%, %Tooltip10%, 10
+			tooltip, <, %BarX%, %FishBarTooltipHeight%, 19
+		}
+		else
+		{	
+			Action := 6
+			BarX := FishX-HalfBarSize
+			tooltip, Tracking direction: >>>, %TooltipX%, %Tooltip10%, 10
+			tooltip, >, %BarX%, %FishBarTooltipHeight%, 19
+		}
+	}
+}
+; --- Langkah 6: Jika Ikan TIDAK DITEMUKAN, akhiri minigame ---
+else
+{
+	tooltip, , , , 10
+	tooltip, , , , 11
+	tooltip, , , , 12
+	tooltip, , , , 13
+	tooltip, , , , 14
+	tooltip, , , , 15
+	tooltip, , , , 17
+	tooltip, , , , 18
+	tooltip, , , , 19
+	tooltip, , , , 20
+	EndMinigame := true
+	settimer, BarMinigame2, Off
+}
