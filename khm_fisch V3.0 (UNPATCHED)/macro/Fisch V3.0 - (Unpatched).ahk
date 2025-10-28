@@ -25,8 +25,8 @@ Gui, Font, cFFFFFF s10, Segoe UI ; text
 Gui, Tab, General Settings
 Gui, Add, Text, x30 y40, Auto Lower Graphics:
 Gui, Add, Checkbox, x205 y40 vAutoLowerGraphics, Enable
-Gui, Add, Text, x30 y80, Auto Zoom Out:
-Gui, Add, Checkbox, x205 y80 vAutoZoomOutCamera, Enable
+Gui, Add, Text, x30 y80, Auto Zoom In:
+Gui, Add, Checkbox, x205 y80 vAutoZoomInCamera, Enable
 
 ; Permanently disabled and unchecked
 
@@ -64,7 +64,7 @@ Gui, Add, Edit, x195 y120 w100 vShakeFailsafe, 20
 
 ; === Match Control Colors (Darker Gray Elements) ===
 GuiControl, +Background121212 +cFFFFFF, AutoLowerGraphics
-GuiControl, +Background121212 +cFFFFFF, AutoZoomOutCamera
+GuiControl, +Background121212 +cFFFFFF, AutoZoomInCamera
 GuiControl, +Background121212 +cFFFFFF, AutoEnableCameraMode
 GuiControl, +Background121212 +cFFFFFF, AutoLookDownCamera
 GuiControl, +Background121212 +cFFFFFF, AutoBlurCamera
@@ -191,7 +191,7 @@ SaveSettings:
    FileAppend, , %SettingsFileName%  ; Create the file if it doesn't exist
 
     IniWrite, %AutoLowerGraphics%, %SettingsFileName%, General, AutoLowerGraphics
-	IniWrite, %AutoZoomOutCamera%, %SettingsFileName%, General, AutoZoomOutCamera
+	IniWrite, %AutoZoomInCamera%, %SettingsFileName%, General, AutoZoomInCamera
 	IniWrite, %AutoEnableCameraMode%, %SettingsFileName%, General, AutoEnableCameraMode
 	IniWrite, %AutoLookDownCamera%, %SettingsFileName%, General, AutoLookDownCamera
 	IniWrite, %AutoBlurCamera%, %SettingsFileName%, General, AutoBlurCamera
@@ -232,7 +232,7 @@ IniWrite, %UnstableLeftMultiplier%, %SettingsFileName%, Minigame, UnstableLeftMu
 	IniWrite, %RightAnkleBreakMultiplier%, %SettingsFileName%, Minigame, RightAnkleBreakMultiplier
 	IniWrite, %LeftAnkleBreakMultiplier%, %SettingsFileName%, Minigame, LeftAnkleBreakMultiplier
 	
-; Done
+    ; Done
 	Gui, -AlwaysOnTop
 	MsgBox, 0x40040, Saved, Settings saved successfully as %SettingsFileName% !, 0.8
 	Gui, +AlwaysOnTop
@@ -241,7 +241,7 @@ Return
 ; Load settings
 LoadSettings:
 	IniRead, lAutoLowerGraphics, %SettingsFileName%, General, AutoLowerGraphics
-	IniRead, lAutoZoomOutCamera, %SettingsFileName%, General, AutoZoomOutCamera
+	IniRead, lAutoZoomInCamera, %SettingsFileName%, General, AutoZoomInCamera
 	IniRead, lAutoEnableCameraMode, %SettingsFileName%, General, AutoEnableCameraMode
 	IniRead, lAutoLookDownCamera, %SettingsFileName%, General, AutoLookDownCamera
 	lAutoBlurCamera := false
@@ -288,7 +288,7 @@ LoadSettings:
 	if FileExist(SettingsFileName) {
 	Gui, Submit, NoHide
 	GuiControl,, AutoLowerGraphics, %lAutoLowerGraphics%
-	GuiControl,, AutoZoomOutCamera, %lAutoZoomOutCamera%
+	GuiControl,, AutoZoomInCamera, %lAutoZoomInCamera%
 	GuiControl,, AutoEnableCameraMode, %lAutoEnableCameraMode%
 	GuiControl,, AutoLookDownCamera, %lAutoLookDownCamera%
 	GuiControl,, AutoBlurCamera, 0
@@ -338,7 +338,7 @@ LoadSettings:
 		if (!SilentLoad) {
 			Gui, -AlwaysOnTop
 			MsgBox, 0x40030, Loaded, Settings failed to load.
-Gui, +AlwaysOnTop
+			Gui, +AlwaysOnTop
 		}
 	}
 if (!SilentLoad) {
@@ -414,7 +414,7 @@ Launch:
 Gui, Hide
 	MacroActive := true
 	IniRead, lAutoLowerGraphics, %SettingsFileName%, General, AutoLowerGraphics
-	IniRead, lAutoZoomOutCamera, %SettingsFileName%, General, AutoZoomOutCamera
+	IniRead, lAutoZoomInCamera, %SettingsFileName%, General, AutoZoomInCamera
 	IniRead, lAutoEnableCameraMode, %SettingsFileName%, General, AutoEnableCameraMode
 	IniRead, lAutoLookDownCamera, %SettingsFileName%, General, AutoLookDownCamera
 	lAutoBlurCamera := false
@@ -613,8 +613,7 @@ return
 #If (!WinActive("ahk_class AutoHotkeyGUI") && MacroActive)
 $o::
  Gosub, StopMacro
- Gosub, Launch ;
-return
+ Gosub, Launch ; return
 
 $m::Reload
 $p::Goto, StartCalculation
@@ -665,24 +664,24 @@ if (AutoLowerGraphics == true)
 	sleep 50
 	}
 
-tooltip, Current Task: AutoZoomOutCamera, %TooltipX%, %Tooltip7%, 7
-tooltip, Scroll Out: 0/20, %TooltipX%, %Tooltip9%, 9
-tooltip, Scroll In: 0/1, %TooltipX%, %Tooltip10%, 10
+tooltip, Current Task: AutoZoomInCamera, %TooltipX%, %Tooltip7%, 7
+tooltip, Scroll In: 0/20, %TooltipX%, %Tooltip9%, 9
+tooltip, Scroll Out: 0/1, %TooltipX%, %Tooltip10%, 10
 scrollcounter := 0
-if (AutoZoomOutCamera == true)
+if (AutoZoomInCamera == true)
 	{
 	sleep 50
 	loop, 20
 		{
 		scrollcounter++
-		tooltip, Scroll Out: %scrollcounter%/20, %TooltipX%, %Tooltip9%, 9
-		send {wheeldown}
-		tooltip, Action: Scroll Out, %TooltipX%, %Tooltip8%, 8
+		tooltip, Scroll In: %scrollcounter%/20, %TooltipX%, %Tooltip9%, 9
+		send {wheelup}
+		tooltip, Action: Scroll In, %TooltipX%, %Tooltip8%, 8
 		sleep 50
 		}
-	send {wheelup}
-	tooltip, Scroll In: 1/1, %TooltipX%, %Tooltip10%, 10
-	tooltip, Action: Scroll In, %TooltipX%, %Tooltip8%, 8
+	send {wheeldown}
+	tooltip, Scroll Out: 1/1, %TooltipX%, %Tooltip10%, 10
+	tooltip, Action: Scroll Out, %TooltipX%, %Tooltip8%, 8
 	AutoZoomDelay := AutoZoomDelay*5
 	sleep 50
 	}
