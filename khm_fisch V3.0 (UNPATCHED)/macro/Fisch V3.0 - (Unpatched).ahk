@@ -28,6 +28,7 @@ Gui, Add, Checkbox, x205 y40 vAutoLowerGraphics, Enable
 Gui, Add, Text, x30 y80, Auto Zoom In:
 Gui, Add, Checkbox, x205 y80 vAutoZoomInCamera, Enable
 
+;
 ; Permanently disabled and unchecked
 
 Gui, Add, Text, x30 y120, Auto Look Down:
@@ -48,10 +49,12 @@ Gui, Add, Text, x380 y300, Seraphic Rod Check:
 Gui, Add, Checkbox, x500 y300 vSera, Enable
 Gui, Add, Text, x380 y320, Only Enable if youre using Seraphic Rod
 
+;
 ; Mini guide
 Gui, Add, Text, x380 y280, Increase the Hold duration if you have high ping
 Gui, Add, Text, x380 y360, If you cant load or save settings, Right click and Run as Admin `n( requires AutoHotkey v2 )
 
+;
 ; Shake Settings Tab =====================================
 Gui, Tab, Shake Settings
 ; Navigation Key removed
@@ -62,6 +65,7 @@ Gui, Add, Edit, x195 y80 w100 vNavigationKey, \
 Gui, Add, Text, x30 y120, Shake Failsafe (sec):
 Gui, Add, Edit, x195 y120 w100 vShakeFailsafe, 20
 
+;
 ; === Match Control Colors (Darker Gray Elements) ===
 GuiControl, +Background121212 +cFFFFFF, AutoLowerGraphics
 GuiControl, +Background121212 +cFFFFFF, AutoZoomInCamera
@@ -78,8 +82,10 @@ GuiControl, +Background121212 +cFFFFFF, NavigationKey
 GuiControl, +Background121212 +cFFFFFF, ShakeFailsafe
 GuiControl, +Background121212 +cFFFFFF, FishBarColorHex
 GuiControl, +Background121212 +cFFFFFF, WhiteBarColorHex
+GuiControl, +Background121212 +cFFFFFF, ColorPreset
 
 
+;
 ; Click set
 Gui, Add, Text, x30 y160, Click Shake Color Tolerance:
 Gui, Add, Edit, x195 y160 w100 vClickShakeColorTolerance, 3
@@ -87,11 +93,13 @@ Gui, Add, Text, x30 y200, Click Scan Delay (ms):
 Gui, Add, Edit, x195 y200 w100 vClickScanDelay, 10
 Gui, Add, Text, x380 y200, Adjust the Click Speed
 
+;
 ; Navigation Spam removed
 Gui, Add, Text, x380 y120, How many seconds before restarting if failed to shake
 Gui, Add, Text, x30 y300, If you already set it up, to ensure Shake Mode works:
 Gui, Add, Text, x30 y320, Load settings -> Save settings -> Start Macro
 
+;
 ; Minigame Settings Tab	============================
 Gui, Tab, Minigame Settings
 
@@ -108,6 +116,7 @@ Gui, Add, Edit, x180 y140 w100 vWhiteBarColorTolerance, 15
 Gui, Add, Text, x30 y180, Arrow Tolerance:
 Gui, Add, Edit, x180 y180 w100 vArrowColorTolerance, 6
 
+;
 ; Bar control
 Gui, Add, Text, x30 y220, Scan Delay:
 Gui, Add, Edit, x180 y220 w100 vScanDelay, 10
@@ -116,16 +125,16 @@ Gui, Add, Edit, x180 y260 w100 vSideBarRatio, 0.7
 Gui, Add, Text, x30 y300, Side Bar Delay:
 Gui, Add, Edit, x180 y300 w100 vSideDelay, 400
 
-; COLOR BLOCK
-Gui, Add, Text, x30 y340, Fish Bar Color (Hex):
-Gui, Add, Edit, x180 y340 w100 vFishBarColorHex, %FishBarColorHex%
-Gui, Add, Button, x290 y340 w40 h20 gPickFishColor, Pick
-Gui, Add, Button, x335 y340 w40 h20 gResetFishColor, Reset
-Gui, Add, Text, x30 y380, White Bar Color (Hex):
-Gui, Add, Edit, x180 y380 w100 vWhiteBarColorHex, %WhiteBarColorHex%
-Gui, Add, Button, x290 y380 w40 h20 gPickWhiteColor, Pick
-Gui, Add, Button, x335 y380 w40 h20 gResetWhiteColor, Reset
+;
+; COLOR BLOCK (MODIFIED)
+Gui, Add, Text, x30 y340, Color Preset:
+Gui, Add, ComboBox, x180 y340 w195 vColorPreset gUpdateColorPreset, Default|SanguineSpire|Onirifalx
+Gui, Add, Text, x30 y380, Fish Bar Color (Hex):
+Gui, Add, Edit, x180 y380 w100 vFishBarColorHex, %FishBarColorHex%
+Gui, Add, Text, x30 y420, White Bar Color (Hex):
+Gui, Add, Edit, x180 y420 w100 vWhiteBarColorHex, %WhiteBarColorHex%
 
+;
 ; Stable
 Gui, Add, Text, x400 y40, Stable Right Multiplier:
 Gui, Add, Edit, x565 y40 w100 vStableRightMultiplier, 2.36
@@ -136,6 +145,7 @@ Gui, Add, Edit, x565 y120 w100 vStableLeftMultiplier, 1.211
 Gui, Add, Text, x400 y160, Stable Left Division:
 Gui, Add, Edit, x565 y160 w100 vStableLeftDivision, 1.12
 
+;
 ; Unstable
 Gui, Add, Text, x400 y200, Unstable Right Multiplier:
 Gui, Add, Edit, x565 y200 w100 vUnstableRightMultiplier, 2.665
@@ -146,12 +156,14 @@ Gui, Add, Edit, x565 y280 w100 vUnstableLeftMultiplier, 2.19
 Gui, Add, Text, x400 y320, Unstable Left Division:
 Gui, Add, Edit, x565 y320 w100 vUnstableLeftDivision, 1
 
+;
 ; Ankle
 Gui, Add, Text, x400 y360, Right Ankle Break Multiplier:
 Gui, Add, Edit, x565 y360 w100 vRightAnkleBreakMultiplier, 0.75
 Gui, Add, Text, x400 y400, Left Ankle Break Multiplier:
 Gui, Add, Edit, x565 y400 w100 vLeftAnkleBreakMultiplier, 0.45
 
+;
 ; Buttons
 Gui, Tab
 Gui, Add, Button, x200 y500 w80 h30 gSaveSettings, Save settings
@@ -179,7 +191,34 @@ SelectItem:
 	SettingsFileName := A_ScriptDir . "\default.ini"
 Return
 
+; --- NEW SUBROUTINE FOR COLOR PRESET ---
+UpdateColorPreset:
+	Gui, Submit, NoHide
+	if (ColorPreset = "Default")
+	{
+		GuiControl,, FishBarColorHex, 0x5B4B43
+		GuiControl,, WhiteBarColorHex, 0xFFFFFF
+		Global FishBarColorHex := "0x5B4B43"
+		Global WhiteBarColorHex := "0xFFFFFF"
+	}
+	else if (ColorPreset = "SanguineSpire")
+	{
+		GuiControl,, FishBarColorHex, 0x5a4241
+		GuiControl,, WhiteBarColorHex, 0x2b0000
+		Global FishBarColorHex := "0x5a4241"
+		Global WhiteBarColorHex := "0x2b0000"
+	}
+	else if (ColorPreset = "Onirifalx")
+	{
+		GuiControl,, FishBarColorHex, 0x000000
+		GuiControl,, WhiteBarColorHex, 0xbbe7ff
+		Global FishBarColorHex := "0x000000"
+		Global WhiteBarColorHex := "0xbbe7ff"
+	}
+Return
 
+
+;
 ; Save settings
 SaveSettings:
 	Gui, Submit, NoHide
@@ -197,13 +236,13 @@ SaveSettings:
 	IniWrite, %AutoBlurCamera%, %SettingsFileName%, General, AutoBlurCamera
 	IniWrite, %RestartDelay%, %SettingsFileName%, General, RestartDelay
 	IniWrite, %HoldRodCastDuration%, %SettingsFileName%, General, HoldRodCastDuration
-	IniWrite, %WaitForBobberDelay%, %SettingsFileName%, General, WaitForBobberDelay  
+	IniWrite, %WaitForBobberDelay%, %SettingsFileName%, General, WaitForBobberDelay
 	IniWrite, %BaitDelay%, %SettingsFileName%, General, BaitDelay
 	IniWrite, %Sera%, %SettingsFileName%, General, Sera
 	IniWrite, %ShakeMode%, %SettingsFileName%, Shake, ShakeMode
 
 	IniWrite, %NavigationKey%, %SettingsFileName%, Shake, NavigationKey
-	IniWrite, %ShakeFailsafe%, %SettingsFileName%, Shake, ShakeFailsafe 
+	IniWrite, %ShakeFailsafe%, %SettingsFileName%, Shake, ShakeFailsafe
 	IniWrite, %ClickShakeColorTolerance%, %SettingsFileName%, Shake, ClickShakeColorTolerance
 	IniWrite, %ClickScanDelay%, %SettingsFileName%, Shake, ClickScanDelay
 
@@ -232,12 +271,14 @@ IniWrite, %UnstableLeftMultiplier%, %SettingsFileName%, Minigame, UnstableLeftMu
 	IniWrite, %RightAnkleBreakMultiplier%, %SettingsFileName%, Minigame, RightAnkleBreakMultiplier
 	IniWrite, %LeftAnkleBreakMultiplier%, %SettingsFileName%, Minigame, LeftAnkleBreakMultiplier
 	
-    ; Done
+;
+; Done
 	Gui, -AlwaysOnTop
 	MsgBox, 0x40040, Saved, Settings saved successfully as %SettingsFileName% !, 0.8
 	Gui, +AlwaysOnTop
 Return
 
+;
 ; Load settings
 LoadSettings:
 	IniRead, lAutoLowerGraphics, %SettingsFileName%, General, AutoLowerGraphics
@@ -284,7 +325,8 @@ LoadSettings:
 	IniRead, lLeftAnkleBreakMultiplier, %SettingsFileName%, Minigame, LeftAnkleBreakMultiplier
 
 	
-	; Update GUI
+	;
+; Update GUI
 	if FileExist(SettingsFileName) {
 	Gui, Submit, NoHide
 	GuiControl,, AutoLowerGraphics, %lAutoLowerGraphics%
@@ -338,7 +380,7 @@ LoadSettings:
 		if (!SilentLoad) {
 			Gui, -AlwaysOnTop
 			MsgBox, 0x40030, Loaded, Settings failed to load.
-			Gui, +AlwaysOnTop
+Gui, +AlwaysOnTop
 		}
 	}
 if (!SilentLoad) {
@@ -356,57 +398,9 @@ ExitApp
 
 FirstRun := true
 
-; --- SUBROUTINE COLOR PICKER ---
-PickFishColor:
-Gui, -AlwaysOnTop
-Tooltip, Hover and LEFT CLICK to select Fish Bar color.`nPress ESC to cancel.
-Global PickingColorFor := "FishBarColorHex"
-Hotkey, ~LButton, OnPickColor, On
-Hotkey, Escape, OnCancelPick, On
-Return
+; --- SUBROUTINE COLOR PICKER (REMOVED) ---
 
-PickWhiteColor:
-Gui, -AlwaysOnTop
-Tooltip, Hover and LEFT CLICK to select Fish Bar color.`nPress ESC to cancel.
-Global PickingColorFor := "WhiteBarColorHex"
-Hotkey, ~LButton, OnPickColor, On
-Hotkey, Escape, OnCancelPick, On
-Return
-
-OnPickColor:
-if (PickingColorFor = "")
-Return
- MouseGetPos, PickX, PickY
- PixelGetColor, PickedColor, %PickX%, %PickY%, RGB
-
- GuiControl,, %PickingColorFor%, %PickedColor%
-
-if (PickingColorFor = "FishBarColorHex")
-Global FishBarColorHex := PickedColor
- else if (PickingColorFor = "WhiteBarColorHex")
-Global WhiteBarColorHex := PickedColor
-
- Gosub, OnCancelPick
- Return
-
-OnCancelPick:
- Hotkey, ~LButton, Off
- Hotkey, Escape, Off
- Global PickingColorFor := ""
- Tooltip,
- Gui, +AlwaysOnTop
- Return
-
-ResetFishColor:
- GuiControl,, FishBarColorHex, 0x5B4B43
- Global FishBarColorHex := "0x5B4B43"
- Return
-
-ResetWhiteColor:
- GuiControl,, WhiteBarColorHex, 0xFFFFFF
- Global WhiteBarColorHex := "0xFFFFFF"
- Return
-
+;
 ; ---
 
 ;====================================================================================================;
@@ -479,6 +473,7 @@ ExitApp
 }
 FirstRun := false
 
+;
 ; --- DPI CHECK ---
 if (A_ScreenDPI != 96) {
  Msg := "Your display scale is not 100" Chr(37) ".`nThe macro may not work properly.`nContinue anyway?`n(Press O when nothing appeared)"
@@ -517,6 +512,7 @@ send {shift up}
 Calculations:
 WinGetActiveStats, Title, WindowWidth, WindowHeight, WindowLeft, WindowTop
 
+;
 ; Base Resolution
 BaseW := 1280
 BaseH := 720
@@ -525,6 +521,7 @@ BaseH := 720
 scaleX := WindowWidth / BaseW
 scaleY := WindowHeight / BaseH
 
+;
 ; Coordinates
 CameraCheckLeft:= (BaseW/2.8444) * scaleX
 CameraCheckRight := (BaseW/1.5421) * scaleX
@@ -548,6 +545,7 @@ ProgressAreaBottom := (BaseH/1.08) * scaleY
 
 FishBarTooltipHeight := (BaseH/1.0626) * scaleY
 
+;
 ; Resolution scaling
 ResolutionScaling := WindowWidth / (WindowWidth * 2.37)
 
@@ -607,8 +605,7 @@ exitapp
 return
 
 ;====================================================================================================;
-; Hotkeys only active when macro is running
-; Hotkeys only active when macro is running
+
 ; Hotkeys only active when macro is running
 #If (!WinActive("ahk_class AutoHotkeyGUI") && MacroActive)
 $o::
@@ -638,6 +635,7 @@ tooltip, , , , 12
 tooltip, , , , 14
 tooltip, , , , 16
 
+;
 ; Navigation mode removed; no special handling
 
 tooltip, Current Task: AutoLowerGraphics, %TooltipX%, %Tooltip7%, 7
@@ -869,6 +867,7 @@ if (Sera == true)
 		sleep 800
 		send {lbutton up}
 	}
+;
 ; Thanks Lunar ==================
 if Control == 0:
 	Control := 0.001
