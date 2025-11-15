@@ -19,7 +19,8 @@ PickingColorFor := ""
 Gui,+AlwaysOnTop
 Gui, +Resize +MinSize
 Gui, Add, Tab2, w800 h550, General Settings|Shake Settings|Minigame Settings
-Gui, Color, 000000, 000000 ; (AMOLED)
+Gui, Color, 000000, 000000 ;
+(AMOLED)
 Gui, Font, cFFFFFF s10, Segoe UI ; text
 
 ; General Settings Tab ==============================
@@ -129,7 +130,7 @@ Gui, Add, Edit, x180 y300 w100 vSideDelay, 400
 ;
 ; COLOR BLOCK 
 Gui, Add, Text, x30 y340, Color Preset:
-Gui, Add, ComboBox, x180 y340 w195 vColorPreset gUpdateColorPreset, Default|SanguineSpire|Onirifalx
+Gui, Add, ComboBox, x180 y340 w195 vColorPreset gUpdateColorPreset, Default|SanguineSpire|Onirifalx|Fabulous
 Gui, Add, Text, x30 y380, Fish Bar Colors:
 Gui, Add, Edit, x180 y380 w195 vFishBarColorHexDisplay ReadOnly, %g_FishColors%
 Gui, Add, Text, x30 y420, White Bar Colors:
@@ -192,6 +193,7 @@ SelectItem:
 	SettingsFileName := A_ScriptDir . "\default.ini"
 Return
 
+;
 ; --- COLOR PRESET ---
 UpdateColorPreset:
 	Gui, Submit, NoHide
@@ -199,16 +201,25 @@ UpdateColorPreset:
 	{
 		Global g_FishColors := "0x5B4B43"
 		Global g_WhiteColors := "0xFFFFFF"
+		Global g_IndicatorArrowColor := "0x878584" ; Default arrow color
 	}
 	else if (ColorPreset = "SanguineSpire")
 	{
 		Global g_FishColors := "0x5a4241|0x44110f"
 		Global g_WhiteColors := "0x2c0000|0x2b0000"
+		Global g_IndicatorArrowColor := "0x878584" ; Default arrow color
 	}
 	else if (ColorPreset = "Onirifalx")
 	{
 		Global g_FishColors := "0x000000|0x44110f"
 		Global g_WhiteColors := "0xb3dcf5|0x86acd0|0x7498c0|0xbbe7ff|0x6587b4"
+		Global g_IndicatorArrowColor := "0x878584" ; Default arrow color
+	}
+	else if (ColorPreset = "Fabulous")
+	{
+		Global g_FishColors := "0xE8C1D1" ; Sesuai gambar
+		Global g_WhiteColors := "0xF5E9F7|0xE8F1F9" ; Kiri|Kanan
+		Global g_IndicatorArrowColor := "0xA695A3" ; Sesuai gambar
 	}
 
 	GuiControl,, FishBarColorHexDisplay, %g_FishColors%
@@ -216,6 +227,7 @@ UpdateColorPreset:
 Return
 
 
+;
 ; Thanks My frendo akwokaowwkwk
 
 ; Save settings
@@ -264,7 +276,7 @@ SaveSettings:
 	IniWrite, %UnstableRightMultiplier%, %SettingsFileName%, Minigame, UnstableRightMultiplier
 	IniWrite, %UnstableRightDivision%, %SettingsFileName%, Minigame, UnstableRightDivision
 
-IniWrite, %UnstableLeftMultiplier%, %SettingsFileName%, Minigame, UnstableLeftMultiplier
+	IniWrite, %UnstableLeftMultiplier%, %SettingsFileName%, Minigame, UnstableLeftMultiplier
 	IniWrite, %UnstableLeftDivision%, %SettingsFileName%, Minigame, UnstableLeftDivision
 	
 	IniWrite, %RightAnkleBreakMultiplier%, %SettingsFileName%, Minigame, RightAnkleBreakMultiplier
@@ -438,16 +450,25 @@ Gui, Hide
 	{
 		Global g_FishColors := "0x5B4B43"
 		Global g_WhiteColors := "0xFFFFFF"
+		Global g_IndicatorArrowColor := "0x878584" ; Default arrow color
 	}
 	else if (ColorPreset = "SanguineSpire")
 	{
 		Global g_FishColors := "0x5a4241|0x44110f"
 		Global g_WhiteColors := "0x2c0000|0x2b0000"
+		Global g_IndicatorArrowColor := "0x878584" ; Default arrow color
 	}
 	else if (ColorPreset = "Onirifalx")
 	{
 		Global g_FishColors := "0x000000|0x44110f"
 		Global g_WhiteColors := "0xb3dcf5|0x86acd0|0x7498c0|0xbbe7ff|0x6587b4"
+		Global g_IndicatorArrowColor := "0x878584" ; Default arrow color
+	}
+	else if (ColorPreset = "Fabulous")
+	{
+		Global g_FishColors := "0xE8C1D1" ; Sesuai gambar
+		Global g_WhiteColors := "0xF5E9F7|0xE8F1F9" ; Kiri|Kanan
+		Global g_IndicatorArrowColor := "0xA695A3" ; Sesuai gambar
 	}
 
 	IniRead, lScanDelay, %SettingsFileName%, Minigame, ScanDelay
@@ -525,7 +546,6 @@ send {shift up}
 Calculations:
 WinGetActiveStats, Title, WindowWidth, WindowHeight, WindowLeft, WindowTop
 
-;
 ; Base Resolution
 BaseW := 1280
 BaseH := 720
@@ -534,7 +554,6 @@ BaseH := 720
 scaleX := WindowWidth / BaseW
 scaleY := WindowHeight / BaseH
 
-;
 ; Coordinates
 CameraCheckLeft:= (BaseW/2.8444) * scaleX
 CameraCheckRight := (BaseW/1.5421) * scaleX
@@ -558,7 +577,6 @@ ProgressAreaBottom := (BaseH/1.08) * scaleY
 
 FishBarTooltipHeight := (BaseH/1.0626) * scaleY
 
-;
 ; Resolution scaling
 ResolutionScaling := WindowWidth / (WindowWidth * 2.37)
 
@@ -618,7 +636,6 @@ exitapp
 return
 
 ;====================================================================================================;
-
 ; Hotkeys only active when macro is running
 #If (!WinActive("ahk_class AutoHotkeyGUI") && MacroActive)
 $o::
@@ -847,7 +864,7 @@ else
 {
 	FishFoundInShake := false
 	Loop, Parse, g_FishColors, |
-	{
+{
 		CurrentFishColor := A_LoopField
 		PixelSearch, , , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %CurrentFishColor%, %FishBarColorTolerance%, Fast
 		if !ErrorLevel
@@ -894,7 +911,6 @@ if (Sera == true)
 		send {lbutton up}
 	}
 ;
-
 if Control == 0:
 	Control := 0.001
 WhiteBarSize := Round((A_ScreenWidth / 247.03) * (InStr(Control, "0.") ? (Control * 100) : Control) + (A_ScreenWidth / 8.2759), 0)
@@ -951,7 +967,8 @@ else if (Action == 1)
 		AnkleBreak := true
 		AnkleBreakDuration := AnkleBreakDuration+(Duration-CounterStrafe)*LeftAnkleBreakMultiplier
 	}
-else if (Action == 2)
+else 
+if (Action == 2)
 	{
 		SideToggle := false
 		send {lbutton down}
@@ -1005,7 +1022,8 @@ else if (Action == 5)
 			AnkleBreakDuration := 0
 		}
 		MinDuration := 10
-		if (Control == 0.15 or Control > 0.15){
+		if (Control 
+== 0.15 or Control > 0.15){
 			MaxDuration := WhiteBarSize*0.88
 		}else if(Control == 0.2 or Control > 0.2){
 			MaxDuration := WhiteBarSize*0.8
@@ -1041,7 +1059,8 @@ else if (Action == 6)
 		}else{
 			MaxDuration := WhiteBarSize + (Abs(Direction) * 0.2)
 		}	
-		Duration := Max(MinDuration, Min(Abs(Direction) * UnstableRightMultiplier * PixelScaling, MaxDuration))
+		Duration := 
+Max(MinDuration, Min(Abs(Direction) * UnstableRightMultiplier * PixelScaling, MaxDuration))
 		sleep %Duration%
 		send {lbutton up}
 		CounterStrafe := Duration/UnstableRightDivision
@@ -1080,7 +1099,7 @@ if (FishFound)
 			Action := 3
 			tooltip, |, %MaxLeftBar%, %FishBarTooltipHeight%, 19
 			tooltip, Direction: Max Left, %TooltipX%, %Tooltip10%, 10
-			PixelSearch, ArrowX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, 0x878584, %ArrowColorTolerance%, Fast
+			PixelSearch, ArrowX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %g_IndicatorArrowColor%, %ArrowColorTolerance%, Fast ; MODIFIED
 				if !ErrorLevel
 				{	
 					tooltip, <-, %ArrowX%, %FishBarTooltipHeight%, 18
@@ -1096,7 +1115,7 @@ if (FishFound)
 			Action := 4
 			tooltip, |, %MaxRightBar%, %FishBarTooltipHeight%, 19
 			tooltip, Direction: Max Right, %TooltipX%, %Tooltip10%, 10
-			PixelSearch, ArrowX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, 0x878584, %ArrowColorTolerance%, Fast
+			PixelSearch, ArrowX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %g_IndicatorArrowColor%, %ArrowColorTolerance%, Fast ; MODIFIED
 				if !ErrorLevel
 				{	
 					tooltip, ->, %ArrowX%, %FishBarTooltipHeight%, 18
@@ -1108,22 +1127,50 @@ if (FishFound)
 			return
 		}
 	
+	; --- START: LOGIKA BARU DETEKSI KIRI/KANAN ---
+	Colors := StrSplit(g_WhiteColors, "|")
+	BoxLeftColor := Colors[1]
+	BoxRightColor := Colors[2]
+
+	; Jika hanya 1 warna (default), gunakan untuk keduanya
+	if (!BoxRightColor)
+		BoxRightColor := BoxLeftColor
+
+	; Cari Box Left Color
+	PixelSearch, BarLeftX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %BoxLeftColor%, %WhiteBarColorTolerance%, Fast
+	if (ErrorLevel)
+		BarLeftFound := false
+	else
+		BarLeftFound := true
+
+	; Cari Box Right Color
+	PixelSearch, BarRightX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %BoxRightColor%, %WhiteBarColorTolerance%, Fast
+	if (ErrorLevel)
+		BarRightFound := false
+	else
+		BarRightFound := true
+
 	BarFound := false
-	Loop, Parse, g_WhiteColors, |
+	
+	if (BarLeftFound && BarRightFound && BarRightX > BarLeftX)
 	{
-		CurrentWhiteColor := A_LoopField
-		PixelSearch, BarX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %CurrentWhiteColor%, %WhiteBarColorTolerance%, Fast
-		if !ErrorLevel
-		{
-			BarFound := true 
-			break          
-		}
+		; --- LOGIKA BARU: Ditemukan Kiri & Kanan ---
+		; Hitung titik tengah bar berdasarkan tepi yang ditemukan
+		BarFound := true
+		BarX := BarLeftX + ((BarRightX - BarLeftX) / 2)
 	}
+	else if (BarLeftFound) ; Fallback jika hanya 1 warna ditemukan (logika lama)
+	{
+		; --- LOGIKA LAMA (FALLBACK): Pakai HalfBarSize ---
+		BarFound := true
+		BarX := BarLeftX + HalfBarSize
+	}
+	; --- END: LOGIKA BARU ---
 
 	if (BarFound)
 	{
 		tooltip, , , , 18
-		BarX := BarX + HalfBarSize
+		; BarX sudah dihitung di atas
 		Direction := BarX - FishX
 		DistanceFactor := Abs(Direction) / HalfBarSize
 
@@ -1146,7 +1193,8 @@ if (FishFound)
 			tooltip, Tracking direction: <<<, %TooltipX%, %Tooltip10%, 10
 			tooltip, <, %BarX%, %FishBarTooltipHeight%, 19
 		}
-		else if (Direction < -Deadzone2)
+		else 
+if (Direction < -Deadzone2)
 		{
 			Action := 6
 			tooltip, Tracking direction: >>>, %TooltipX%, %Tooltip10%, 10
@@ -1164,7 +1212,7 @@ if (FishFound)
 	else
 	{
 		Direction := HalfBarSize
-		PixelSearch, ArrowX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, 0x878584, %ArrowColorTolerance%, Fast
+		PixelSearch, ArrowX, , FishBarLeft, FishBarTop, FishBarRight, FishBarBottom, %g_IndicatorArrowColor%, %ArrowColorTolerance%, Fast ; MODIFIED
 		ArrowX := ArrowX-FishX
 		if (ArrowX > 0)
 		{	
