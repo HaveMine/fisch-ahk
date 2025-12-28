@@ -1,0 +1,45 @@
+Shiny
+Sparkling
+Big/Giant
+Shrouded
+Mythical
+Abyssal
+Spirit
+Greedy
+Crimson
+Boreal
+Vined
+Fossilized
+Hexed
+Scorched
+Lunar
+Midas
+Electric
+Silver
+Glossy
+Darkened
+Frozen
+Mosaic
+Negative
+Translucent
+Albino
+Amber
+Poisoned
+Popsicle (Event)
+Birthday (Event)
+Jingle Bell (Event)
+Summer (Event)
+Eerie (Event)
+Frightful (Event)
+Gravy (Event)
+Spooky (Event)
+Gingerbread (Event)
+Merry (Event)
+Peppermint (Event)
+Minty (Event)
+Awesome (Event)
+Ghastly (Event)
+Sinister (Event)
+Festive (Event)
+Jolly (Event)
+Beachy (Event)
