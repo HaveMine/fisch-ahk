@@ -511,20 +511,23 @@ LoadDetectionList() {
 MyGUI := Gui("-DPIScale")
 MyGUI.Opt("+AlwaysOnTop")
 MyGUI.BackColor := "1E1E2E"
-MyGUI.SetFont("s11 cWhite", "Segoe UI")
+MyGUI.SetFont("s20 cWhite bold", "Segoe UI")
 
 MyGUI.Add("Text",, "OCR Text Detector")
-StartButton := MyGUI.Add("Button", "w250 h40", "Start Detection (F3)")
+MyGUI.SetFont("s11 cWhite norm", "Segoe UI")
+StartButton := MyGUI.Add("Button", "y+10 w250 h40", "Start Detection (F3)")
 StartButton.OnEvent("Click", (*) => ToggleDetection())
-MyGUI.Add("Button", "w250 h40", "Retake Box (F5)").OnEvent("Click", (*) => RetakeOCRBox())
-MyGUI.Add("Button", "w250 h40", "Exit (F4)").OnEvent("Click", (*) => ExitApp())
+MyGUI.Add("Button", "y+23 w250 h40", "Retake Box (F5)").OnEvent("Click", (*) => RetakeOCRBox())
+MyGUI.Add("Button", "y+23 w250 h40", "Exit (F4)").OnEvent("Click", (*) => ExitApp())
 
-MyGUI.Add("Text",, "--- Discord Webhook ---")
-MyGUI.SetFont("s9 cWhite", "Segoe UI")
-WebhookEdit := MyGUI.Add("Edit", "w600 h30 c000000", DiscordWebhookUrl)
+MyGUI.SetFont("s20 cWhite bold", "Segoe UI")
+MyGUI.Add("Text",, "Discord Webhook")
+
+MyGUI.SetFont("s9 cWhite norm", "Segoe UI")
+WebhookEdit := MyGUI.Add("Edit", "y+10 w600 h30 c000000", DiscordWebhookUrl)
 MyGUI.SetFont("s11 cWhite", "Segoe UI")
-MyGUI.Add("Button", "w250 h40", "Test Webhook").OnEvent("Click", (*) => TestWebhook(WebhookEdit.Value))
-MyGUI.Add("Button", "w250 h40", "Save Webhook").OnEvent("Click", (*) => SaveWebhook(WebhookEdit.Value))
+MyGUI.Add("Button", "y+23 w250 h40", "Test Webhook").OnEvent("Click", (*) => TestWebhook(WebhookEdit.Value))
+MyGUI.Add("Button", "y+23 w250 h40", "Save Webhook").OnEvent("Click", (*) => SaveWebhook(WebhookEdit.Value))
 
 LogToggleButton := MyGUI.Add("Text", "w600 h30 +0x100 c3366FF", "> Detection Log")
 LogToggleButton.SetFont("underline")
@@ -532,7 +535,7 @@ LogToggleButton.OnEvent("Click", (*) => ToggleLogDisplay())
 MyGUI.SetFont("s10 c000000", "Segoe UI")
 LogDisplay := MyGUI.Add("Edit", "w600 h350 Multi ReadOnly cBlack Hidden", "Log output:`n")
 MyGUI.SetFont("s11 cWhite", "Segoe UI")
-MyGUI.Show("w630 h450")
+MyGUI.Show("w800 h900")
 MyGUI.Title := "Khm Event"
 
 LoadDetectionList()
@@ -635,7 +638,7 @@ SendDiscordWebhook(itemText) {
     global DiscordWebhookUrl
     
     try {
-        payload := '{"content":"🎉 **FOUND**: ' itemText '"}'
+        payload := '{"content":"@everyone \n 🎉 **FOUND**: ' itemText '"}'
         
         http := ComObject("WinHttp.WinHttpRequest.5.1")
         http.Open("POST", DiscordWebhookUrl, false)
@@ -663,7 +666,7 @@ TestWebhook(webhookUrl) {
     try {
         UpdateLog("[TEST] Sending test message to webhook...")
         
-        payload := '{"content":"✅ Webhook test successful!"}'
+        payload := '{"content":"@everyone \n ✅ Webhook test successful!"}'
         
         http := ComObject("WinHttp.WinHttpRequest.5.1")
         http.Open("POST", webhookUrl, false)
@@ -727,12 +730,12 @@ ToggleLogDisplay() {
         LogDisplay.Visible := true
         LogToggleButton.Text := "v Detection Log"  
         LogCollapsed := 0
-        MyGUI.Show("w630 h750")
+        MyGUI.Show("w800 h900")
     } else {
         LogDisplay.Visible := false
         LogToggleButton.Text := "> Detection Log"  
         LogCollapsed := 1
-        MyGUI.Show("w630 h450") 
+        MyGUI.Show("w800 h900") 
     }
 }
 
